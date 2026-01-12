@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+    <title>Красная кнопка / Играть на igroutka.ru</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1" />
+	<link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+	<div id="btn-wrap"><div id="app"></div></div>
+	<script>
+   window.addEventListener('DOMContentLoaded', () => {
+        preloadImage('imgs/red-btn-p.png');
+        preloadImage('imgs/green-btn.png');
+        preloadImage('imgs/green-btn-p.png');
+        preloadImage('imgs/blue-btn.png');
+        preloadImage('imgs/blue-btn-p.png');
+      var game = new Game({
+        clickDelay: 600,
+        wrapperSelector: '#app',
+        stagesUrl: 'js/stages.json',
+      });
+      localStorage.bigGamePlayed = true;
+    })
+</script>
+    <script src="js/main.js"></script>
+<div id="more_g" style="position:absolute;top:0;right:0;z-index:1000"><a href="https://igroutka.ru/?utm_source=game_loader" target="_blank" title="Игроутка - бесплатные онлайн игры"><img src="https://m.igroutka.ru/files/img/logo-mini.png" width="180" height="47" alt="Игроутка - бесплатные онлайн игры" /></a></div><a id="game_lock" style="display:none;position:absolute;top:0;right:0;left:0;bottom:0;width:100%;height:100%;z-index:999;" href="https://igroutka.ru/?utm_source=game_lock" target="_blank"></a><script src="https://m.igroutka.ru/files/scripts/script.js"></script></body>
+</html>
