@@ -39,6 +39,14 @@ var preloadImage = function(e) {
         function i(t) {
             var e = this;
             _classCallCheck(this, i), console.log(t), this.hideButton = t.hideButton, this.stage = 0, this.stages = [], this.defaultButtonImageUrl = "./images/red-button.png";
+
+            // Сохраняем ссылки на Yandex SDK и игрока
+            this.ysdk = t.ysdk || null;
+            this.player = t.player || null;
+
+            // Используем начальный этап из параметров или localStorage
+            this.stage = t.initialStage !== undefined ? t.initialStage : (+window.localStorage.currentGameStage || 0);
+
             if (t.stagesUrl && "localhost" || "igroutka.ru" || "games.igroutka.ru" === window.location.hostname ? fetch(t.stagesUrl).then(function(t) {
                     return t.json()
                 }).then(function(t) {
@@ -46,7 +54,7 @@ var preloadImage = function(e) {
                         t.image && t.image.url && preloadImage(t.image.url)
                     }), e.handleClick()
                 }) : t.stages && (this.stages = stages), !document.querySelector(t.wrapperSelector)) throw new Error("Game app wrapper not found by specified selector");
-            this.appWrapper = document.querySelector(t.wrapperSelector), this.stage = +window.localStorage.currentGameStage || 0, this.createMarkup(), this.button.addEventListener("click", debounce(this.handleClick.bind(this), t.clickDelay, !0))
+            this.appWrapper = document.querySelector(t.wrapperSelector), this.createMarkup(), this.button.addEventListener("click", debounce(this.handleClick.bind(this), t.clickDelay, !0))
         }
         return _createClass(i, [{
             key: "createMarkup",
@@ -68,9 +76,28 @@ var preloadImage = function(e) {
                 })
             }
         }, {
+            key: "saveProgress",
+            value: function() {
+                var e = this;
+                // Сохраняем в localStorage
+                window.localStorage.currentGameStage = this.stage;
+
+                // Сохраняем в облачные сохранения Яндекса
+                if (this.player) {
+                    this.player.setData({
+                        currentGameStage: this.stage
+                    }).then(function() {
+                        console.log('Cloud save successful, stage:', e.stage);
+                    }).catch(function(err) {
+                        console.log('Cloud save failed:', err);
+                    });
+                }
+            }
+        }, {
             key: "handleClick",
             value: function() {
-                window.localStorage.currentGameStage = this.stage, this.clearField();
+                this.saveProgress();
+                this.clearField();
                 var t = this.stages[this.stage];
                 if (t.skip) return this.messageBox.innerHTML = "Кнопка была нажата " + this.stage + " раз", void this.stage++;
                 (this.messageBox.innerHTML = t.message, t.image ? (this.button.classList.add("button--custom"), this.button.style.backgroundImage = "url('" + t.image.url + "')") : this.button.classList.remove("button--custom"), t.backgroundImage) && (document.querySelector("body").style.backgroundImage = t.backgroundImage);
@@ -136,7 +163,20 @@ var preloadImage = function(e) {
         }, {
             key: "reset",
             value: function() {
-                window.localStorage.currentGameStage = 0, this.stage = 0, this.clearField(), this.handleClick()
+                window.localStorage.currentGameStage = 0;
+                this.stage = 0;
+
+                // Сбрасываем облачное сохранение
+                if (this.player) {
+                    this.player.setData({
+                        currentGameStage: 0
+                    }).catch(function(err) {
+                        console.log('Cloud save reset failed:', err);
+                    });
+                }
+
+                this.clearField();
+                this.handleClick();
             }
         }]), i
     }();

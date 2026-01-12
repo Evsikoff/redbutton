@@ -5,24 +5,147 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1" />
 	<link rel="stylesheet" href="css/main.css" />
+    <!-- Yandex Games SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
 </head>
-<body>
+<body oncontextmenu="return false;">
+    <!-- Загрузочный экран -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-button"></div>
+            <div class="loading-text">Загрузка...</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
 	<div id="btn-wrap"><div id="app"></div></div>
+	<script src="js/main.js"></script>
 	<script>
-   window.addEventListener('DOMContentLoaded', () => {
-        preloadImage('imgs/red-btn-p.png');
-        preloadImage('imgs/green-btn.png');
-        preloadImage('imgs/green-btn-p.png');
-        preloadImage('imgs/blue-btn.png');
-        preloadImage('imgs/blue-btn-p.png');
-      var game = new Game({
-        clickDelay: 600,
-        wrapperSelector: '#app',
-        stagesUrl: 'js/stages.json',
-      });
-      localStorage.bigGamePlayed = true;
-    })
+    let ysdk = null;
+    let player = null;
+
+    // Инициализация Yandex SDK
+    YaGames.init()
+        .then(sdk => {
+            ysdk = sdk;
+            console.log('Yandex SDK initialized');
+
+            // Получаем язык (по умолчанию русский)
+            const lang = ysdk.environment.i18n.lang || 'ru';
+            console.log('Language:', lang);
+
+            // Инициализируем игрока для облачных сохранений
+            return ysdk.getPlayer({ scopes: false });
+        })
+        .then(p => {
+            player = p;
+            console.log('Player initialized');
+
+            // Загружаем прогресс из облака или localStorage
+            return loadGameProgress();
+        })
+        .then(stage => {
+            // Показываем загрузочный экран минимум 2 секунды
+            return new Promise(resolve => {
+                setTimeout(() => resolve(stage), 2000);
+            });
+        })
+        .then(stage => {
+            // Скрываем загрузочный экран
+            hideLoadingScreen();
+
+            // Предзагрузка изображений
+            preloadImage('imgs/red-btn-p.png');
+            preloadImage('imgs/green-btn.png');
+            preloadImage('imgs/green-btn-p.png');
+            preloadImage('imgs/blue-btn.png');
+            preloadImage('imgs/blue-btn-p.png');
+
+            // Инициализация игры
+            var game = new Game({
+                clickDelay: 600,
+                wrapperSelector: '#app',
+                stagesUrl: 'js/stages.json',
+                initialStage: stage,
+                ysdk: ysdk,
+                player: player
+            });
+
+            localStorage.bigGamePlayed = true;
+
+            // Сообщаем SDK, что игра загружена и готова
+            if (ysdk && ysdk.features && ysdk.features.LoadingAPI) {
+                ysdk.features.LoadingAPI.ready();
+                console.log('LoadingAPI.ready() called');
+            }
+
+            // Сообщаем SDK, что геймплей начался
+            if (ysdk && ysdk.features && ysdk.features.GameplayAPI) {
+                ysdk.features.GameplayAPI.start();
+                console.log('GameplayAPI.start() called');
+            }
+        })
+        .catch(err => {
+            console.error('SDK initialization error:', err);
+            // Если SDK не загрузился, запускаем игру без него
+            hideLoadingScreen();
+
+            preloadImage('imgs/red-btn-p.png');
+            preloadImage('imgs/green-btn.png');
+            preloadImage('imgs/green-btn-p.png');
+            preloadImage('imgs/blue-btn.png');
+            preloadImage('imgs/blue-btn-p.png');
+
+            var game = new Game({
+                clickDelay: 600,
+                wrapperSelector: '#app',
+                stagesUrl: 'js/stages.json',
+            });
+            localStorage.bigGamePlayed = true;
+        });
+
+    // Функция загрузки прогресса (сначала облако, потом localStorage)
+    async function loadGameProgress() {
+        let cloudStage = null;
+        let localStage = +window.localStorage.currentGameStage || 0;
+
+        // Пробуем загрузить из облачных сохранений Яндекса
+        if (player) {
+            try {
+                const data = await player.getData();
+                if (data && typeof data.currentGameStage !== 'undefined') {
+                    cloudStage = data.currentGameStage;
+                    console.log('Cloud save loaded, stage:', cloudStage);
+                }
+            } catch (err) {
+                console.log('Could not load cloud save:', err);
+            }
+        }
+
+        // Если есть облачное сохранение - используем его
+        if (cloudStage !== null) {
+            // Также обновляем localStorage для синхронизации
+            window.localStorage.currentGameStage = cloudStage;
+            return cloudStage;
+        }
+
+        // Иначе используем localStorage
+        console.log('Using localStorage, stage:', localStage);
+        return localStage;
+    }
+
+    // Функция скрытия загрузочного экрана
+    function hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }
+    }
 </script>
-    <script src="js/main.js"></script>
 <div id="more_g" style="position:absolute;top:0;right:0;z-index:1000"><a href="https://igroutka.ru/?utm_source=game_loader" target="_blank" title="Игроутка - бесплатные онлайн игры"><img src="https://m.igroutka.ru/files/img/logo-mini.png" width="180" height="47" alt="Игроутка - бесплатные онлайн игры" /></a></div><a id="game_lock" style="display:none;position:absolute;top:0;right:0;left:0;bottom:0;width:100%;height:100%;z-index:999;" href="https://igroutka.ru/?utm_source=game_lock" target="_blank"></a><script src="https://m.igroutka.ru/files/scripts/script.js"></script></body>
 </html>
