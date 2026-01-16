@@ -54,7 +54,13 @@ var preloadImage = function(e) {
                         t.image && t.image.url && preloadImage(t.image.url)
                     }), e.handleClick()
                 }) : t.stages && (this.stages = stages), !document.querySelector(t.wrapperSelector)) throw new Error("Game app wrapper not found by specified selector");
-            this.appWrapper = document.querySelector(t.wrapperSelector), this.createMarkup(), this.button.addEventListener("click", debounce(this.handleClick.bind(this), t.clickDelay, !0))
+            this.appWrapper = document.querySelector(t.wrapperSelector), this.createMarkup(), this.button.addEventListener("click", debounce(this.handleClick.bind(this), t.clickDelay, !0));
+
+            // Обработчик изменения размера окна для адаптивности
+            var self = this;
+            window.addEventListener("resize", debounce(function() {
+                self.updateButtonSizes();
+            }, 150))
         }
         return _createClass(i, [{
             key: "createMarkup",
@@ -159,6 +165,47 @@ var preloadImage = function(e) {
                     m.setAttribute("href", t.link), m.setAttribute("target", "_top"), m.classList.add("button-ref"), this.button.appendChild(m)
                 }
                 t.restart && this.reset(), this.stage++
+            }
+        }, {
+            key: "updateButtonSizes",
+            value: function() {
+                // Обновляем базовые размеры кнопки из CSS
+                this.buttonSize = parseInt(window.getComputedStyle(this.button).getPropertyValue("width"));
+                this.buttonMargin = parseInt(window.getComputedStyle(this.button).getPropertyValue("margin"));
+
+                // Пересчитываем размеры сетки кнопок если они есть
+                var buttons = this.buttonWrapper.querySelectorAll(".button");
+                if (buttons.length > 1) {
+                    var t = this.stages[this.stage - 1]; // Текущий этап (stage уже увеличен)
+                    if (t && t.multiply && "grid" == t.multiply.type) {
+                        var s = {
+                            size: 80,
+                            margin: 10,
+                            use: false
+                        };
+                        if (this.appWrapper.offsetWidth <= t.multiply.x * (this.buttonSize + 2 * this.buttonMargin)) {
+                            s.size = .8 * this.appWrapper.offsetWidth / t.multiply.x;
+                            s.margin = .1 * this.appWrapper.offsetWidth / t.multiply.x;
+                            s.use = true;
+                            this.buttonWrapper.style.width = "100%";
+                        } else {
+                            this.buttonWrapper.style.width = t.multiply.x * (this.buttonSize + 2 * this.buttonMargin) + "px";
+                        }
+                        if (s.use) {
+                            buttons.forEach(function(btn) {
+                                btn.style.width = s.size + "px";
+                                btn.style.height = s.size + "px";
+                                btn.style.margin = s.margin + "px";
+                            });
+                        } else {
+                            buttons.forEach(function(btn) {
+                                btn.style.width = "";
+                                btn.style.height = "";
+                                btn.style.margin = "";
+                            });
+                        }
+                    }
+                }
             }
         }, {
             key: "reset",
