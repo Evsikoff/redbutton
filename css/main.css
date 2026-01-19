@@ -322,11 +322,43 @@ body.visible-area--compact .button-wrapper {
     }
 }
 
-@media screen and (max-width: 767px), (orientation: portrait) {
+@media screen and (max-width: 767px) and (orientation: portrait) {
     #app-frame {
         width: min(100vw, calc(100dvh * 3 / 4));
         height: min(100dvh, calc(100vw * 4 / 3));
         aspect-ratio: 3 / 4;
+    }
+}
+
+@media screen and (max-width: 767px) and (orientation: landscape) {
+    #app-frame {
+        width: min(100vw, calc(100dvh * 64 / 27));
+        height: min(100dvh, calc(100vw * 27 / 64));
+        aspect-ratio: 64 / 27;
+    }
+
+    #app {
+        padding: clamp(6px, 1.8vw, 12px);
+    }
+
+    .button {
+        height: clamp(48px, 8vh, 72px);
+        width: clamp(48px, 8vh, 72px);
+        margin: clamp(4px, 1.5vh, 8px);
+    }
+
+    .button--custom {
+        height: clamp(64px, 10vh, 90px);
+        width: clamp(64px, 10vh, 90px);
+    }
+
+    .button-wrapper {
+        margin-bottom: 12px;
+    }
+
+    .message-box {
+        font-size: clamp(12px, 2.6vw, 15px);
+        padding: clamp(4px, 1.5vw, 8px) clamp(8px, 2.5vw, 12px);
     }
 }
 
