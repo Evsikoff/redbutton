@@ -26,6 +26,52 @@ function debounce(s, a, r) {
         }, a), i && s.apply(t, e)
     }
 }
+
+function startVisibleAreaTracking() {
+    var lastWidth = 0;
+    var lastHeight = 0;
+    var scheduled = !1;
+    var root = document.documentElement;
+
+    function updateVisibleArea() {
+        scheduled = !1;
+        var viewport = window.visualViewport || {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            scale: 1
+        };
+        var visibleWidth = Math.round(viewport.width);
+        var visibleHeight = Math.round(viewport.height);
+        if (visibleWidth !== lastWidth) {
+            root.style.setProperty("--visible-width", visibleWidth + "px");
+            lastWidth = visibleWidth;
+        }
+        if (visibleHeight !== lastHeight) {
+            root.style.setProperty("--visible-height", visibleHeight + "px");
+            lastHeight = visibleHeight;
+        }
+        var baselineHeight = Math.max(window.innerHeight, visibleHeight);
+        var scale = Math.min(1, visibleHeight / baselineHeight);
+        root.style.setProperty("--visible-scale", scale.toFixed(3));
+        document.body.classList.toggle("visible-area--compact", scale < 0.9);
+    }
+
+    function scheduleUpdate() {
+        if (scheduled) return;
+        scheduled = !0;
+        requestAnimationFrame(updateVisibleArea);
+    }
+
+    scheduleUpdate();
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("orientationchange", scheduleUpdate);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", scheduleUpdate);
+        window.visualViewport.addEventListener("scroll", scheduleUpdate);
+    }
+}
+
+startVisibleAreaTracking();
 window.location.origin || (window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : ""));
 var preloadImage = function(e) {
         var i = !1;
