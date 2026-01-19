@@ -171,13 +171,17 @@ body {
 }
 
 .button-wrapper {
-    margin: 0 0 30px 0;
+    margin: 0 0 clamp(10px, 3vh, 30px) 0;
     position: relative;
     text-align: center;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
     align-content: center;
+    align-items: center;
+    max-width: 100%;
+    max-height: 70vh;
+    overflow: hidden;
     /* Плавный переход при изменении размера iFrame */
     transition: width var(--resize-transition),
                 margin var(--resize-transition),
@@ -188,11 +192,14 @@ body {
     position: relative;
     height: var(--dynamic-button-size, clamp(60px, 20vw, 100px));
     width: var(--dynamic-button-size, clamp(60px, 20vw, 100px));
+    min-width: 20px;
+    min-height: 20px;
     border: none;
     margin: var(--dynamic-button-margin, clamp(5px, 2vw, 10px));
     background: url(../imgs/red-btn.png) center no-repeat;
     cursor: pointer;
     background-size: 100%;
+    flex-shrink: 1;
     /* Плавный переход при изменении размера iFrame */
     transition: width var(--resize-transition),
                 height var(--resize-transition),

@@ -140,6 +140,7 @@ var preloadImage = function(e) {
                         var d = Math.random() + .5,
                             c = d * this.buttonSize,
                             h = d * this.buttonMargin;
+                        p.dataset.scale = d; // Сохраняем масштаб для корректного ресайза
                         switch (p.style.width = c + "px", p.style.height = c + "px", p.style.margin = h + "px", Math.floor(3 * d) % 3) {
                             case 0:
                                 p.classList.add("button--blue");
@@ -250,13 +251,17 @@ var preloadImage = function(e) {
         }, {
             key: "updateButtonSizes",
             value: function() {
-                // Обновляем базовые размеры кнопки из CSS
-                this.buttonSize = parseInt(window.getComputedStyle(this.button).getPropertyValue("width"));
-                this.buttonMargin = parseInt(window.getComputedStyle(this.button).getPropertyValue("margin"));
-
-                // Получаем размеры контейнера
-                var containerWidth = this.appWrapper.offsetWidth;
+                // Получаем актуальные размеры контейнера
+                var containerWidth = this.appWrapper.offsetWidth || window.innerWidth;
                 var containerHeight = this.appWrapper.offsetHeight || window.innerHeight;
+
+                // Базовый размер кнопки (референсное значение)
+                var baseButtonSize = Math.min(80, containerWidth * 0.2);
+                var baseButtonMargin = baseButtonSize * 0.125;
+
+                // Обновляем сохранённые значения
+                this.buttonSize = baseButtonSize;
+                this.buttonMargin = baseButtonMargin;
 
                 // Пересчитываем размеры сетки кнопок если они есть
                 var buttons = this.buttonWrapper.querySelectorAll(".button");
@@ -266,41 +271,32 @@ var preloadImage = function(e) {
                         var gridX = t.multiply.x;
                         var gridY = t.multiply.y;
 
-                        // Вычисляем оптимальный размер кнопки для сетки
-                        var availableWidth = containerWidth - 20; // padding
-                        var availableHeight = containerHeight * 0.6; // оставляем место для message-box
+                        // Вычисляем доступное пространство с учётом padding
+                        var padding = Math.min(20, containerWidth * 0.05);
+                        var availableWidth = containerWidth - padding * 2;
+                        var availableHeight = containerHeight * 0.7; // оставляем место для message-box
 
-                        var maxButtonWidth = (availableWidth * 0.9) / gridX;
-                        var maxButtonHeight = (availableHeight * 0.9) / gridY;
-                        var optimalSize = Math.min(maxButtonWidth, maxButtonHeight);
+                        // Вычисляем максимальный размер кнопки, чтобы все поместились
+                        var maxSizeByWidth = availableWidth / gridX;
+                        var maxSizeByHeight = availableHeight / gridY;
 
-                        var s = {
-                            size: Math.max(30, Math.min(100, optimalSize * 0.8)),
-                            margin: Math.max(2, Math.min(15, optimalSize * 0.1)),
-                            use: false
-                        };
+                        // Берём минимальный, чтобы гарантированно поместилось
+                        var cellSize = Math.min(maxSizeByWidth, maxSizeByHeight);
 
-                        // Проверяем, помещается ли сетка в контейнер
-                        if (containerWidth <= gridX * (this.buttonSize + 2 * this.buttonMargin)) {
-                            s.use = true;
-                            this.buttonWrapper.style.width = "100%";
-                        } else {
-                            this.buttonWrapper.style.width = gridX * (this.buttonSize + 2 * this.buttonMargin) + "px";
-                        }
+                        // Размер кнопки = 80% от ячейки, отступ = 10% от ячейки
+                        var buttonSize = Math.max(20, cellSize * 0.8);
+                        var buttonMargin = Math.max(1, cellSize * 0.1);
 
-                        if (s.use) {
-                            buttons.forEach(function(btn) {
-                                btn.style.width = s.size + "px";
-                                btn.style.height = s.size + "px";
-                                btn.style.margin = s.margin + "px";
-                            });
-                        } else {
-                            buttons.forEach(function(btn) {
-                                btn.style.width = "";
-                                btn.style.height = "";
-                                btn.style.margin = "";
-                            });
-                        }
+                        // Устанавливаем ширину wrapper
+                        var wrapperWidth = gridX * (buttonSize + 2 * buttonMargin);
+                        this.buttonWrapper.style.width = Math.min(wrapperWidth, availableWidth) + "px";
+
+                        // Применяем размеры ко всем кнопкам
+                        buttons.forEach(function(btn) {
+                            btn.style.width = buttonSize + "px";
+                            btn.style.height = buttonSize + "px";
+                            btn.style.margin = buttonMargin + "px";
+                        });
                     }
                 }
 
@@ -309,12 +305,12 @@ var preloadImage = function(e) {
                     var currentStage = this.stages[this.stage - 1];
                     if (currentStage && currentStage.randomize) {
                         var self = this;
-                        var baseSize = Math.min(containerWidth * 0.15, 80);
+                        var baseSize = Math.min(containerWidth * 0.12, 60);
                         buttons.forEach(function(btn) {
-                            var currentWidth = parseInt(btn.style.width) || self.buttonSize;
-                            var scale = currentWidth / self.buttonSize;
+                            // Получаем оригинальный масштаб из data-атрибута
+                            var scale = parseFloat(btn.dataset.scale) || 1;
                             var newSize = baseSize * scale;
-                            var newMargin = newSize * 0.125;
+                            var newMargin = Math.max(2, newSize * 0.1);
                             btn.style.width = newSize + "px";
                             btn.style.height = newSize + "px";
                             btn.style.margin = newMargin + "px";
