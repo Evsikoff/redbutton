@@ -43,7 +43,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    box-sizing: border-box;
+}
+
+#app-frame {
+    width: min(100vw, calc(100dvh * 16 / 9));
+    height: min(100dvh, calc(100vw * 9 / 16));
+    aspect-ratio: 16 / 9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     box-sizing: border-box;
 }
 
@@ -143,13 +152,14 @@ body {
 
 #app {
     width: 100%;
-    max-width: 640px;
+    height: 100%;
+    max-width: none;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     transition: .35s;
-    padding: 0 10px;
+    padding: clamp(10px, 2.5vw, 20px);
     box-sizing: border-box;
     transform-origin: center center;
     will-change: transform;
@@ -277,8 +287,8 @@ body {
 
 /* Телефоны в горизонтальной ориентации (низкая высота) */
 @media screen and (max-height: 400px) {
-    #btn-wrap {
-        padding: 10px;
+    #app {
+        padding: clamp(6px, 2vw, 12px);
     }
 
     .button {
@@ -301,6 +311,14 @@ body {
     }
 }
 
+@media screen and (max-width: 767px), (orientation: portrait) {
+    #app-frame {
+        width: min(100vw, calc(100dvh * 9 / 16));
+        height: min(100dvh, calc(100vw * 16 / 9));
+        aspect-ratio: 9 / 16;
+    }
+}
+
 /* Планшеты и средние экраны (768px - 1024px) */
 @media screen and (min-width: 768px) {
     .button {
@@ -317,10 +335,6 @@ body {
 
 /* Большие экраны (от 1200px) */
 @media screen and (min-width: 1200px) {
-    #app {
-        max-width: 800px;
-    }
-
     .button {
         height: 120px;
         width: 120px;
