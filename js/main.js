@@ -60,7 +60,10 @@ var preloadImage = function(e) {
             var self = this;
             window.addEventListener("resize", debounce(function() {
                 self.updateButtonSizes();
-            }, 150))
+            }, 150));
+
+            // Инициализация ResizeObserver для детекции изменения размера iFrame
+            this.setupResizeObserver();
         }
         return _createClass(i, [{
             key: "createMarkup",
@@ -167,30 +170,124 @@ var preloadImage = function(e) {
                 t.restart && this.reset(), this.stage++
             }
         }, {
+            key: "setupResizeObserver",
+            value: function() {
+                var self = this;
+
+                // Проверяем поддержку ResizeObserver
+                if (typeof ResizeObserver === 'undefined') {
+                    console.log('ResizeObserver not supported, using fallback');
+                    return;
+                }
+
+                // Сохраняем предыдущие размеры для оптимизации
+                this.lastWidth = 0;
+                this.lastHeight = 0;
+
+                // Создаём ResizeObserver для наблюдения за изменениями размера контейнера
+                this.resizeObserver = new ResizeObserver(debounce(function(entries) {
+                    for (var i = 0; i < entries.length; i++) {
+                        var entry = entries[i];
+                        var width = entry.contentRect.width;
+                        var height = entry.contentRect.height;
+
+                        // Проверяем, действительно ли изменился размер (порог 5px)
+                        if (Math.abs(width - self.lastWidth) > 5 || Math.abs(height - self.lastHeight) > 5) {
+                            self.lastWidth = width;
+                            self.lastHeight = height;
+
+                            console.log('iFrame/Container resized:', width, 'x', height);
+
+                            // Обновляем CSS переменные для динамического масштабирования
+                            self.updateCSSVariables(width, height);
+
+                            // Обновляем размеры кнопок
+                            self.updateButtonSizes();
+                        }
+                    }
+                }, 100));
+
+                // Наблюдаем за #btn-wrap (основной контейнер)
+                var btnWrap = document.getElementById('btn-wrap');
+                if (btnWrap) {
+                    this.resizeObserver.observe(btnWrap);
+                }
+
+                // Также наблюдаем за body для детекции изменения размера iFrame
+                this.resizeObserver.observe(document.body);
+
+                // Инициализируем CSS переменные при старте
+                this.updateCSSVariables(window.innerWidth, window.innerHeight);
+            }
+        }, {
+            key: "updateCSSVariables",
+            value: function(width, height) {
+                var root = document.documentElement;
+
+                // Вычисляем масштабный коэффициент на основе размера контейнера
+                var minDimension = Math.min(width, height);
+                var scaleFactor = Math.max(0.5, Math.min(1.5, minDimension / 400));
+
+                // Вычисляем размеры компонентов
+                var buttonSize = Math.max(40, Math.min(120, minDimension * 0.2));
+                var buttonMargin = Math.max(3, Math.min(15, minDimension * 0.025));
+                var fontSize = Math.max(12, Math.min(20, minDimension * 0.04));
+                var customButtonSize = buttonSize * 1.25;
+
+                // Устанавливаем CSS переменные
+                root.style.setProperty('--scale-factor', scaleFactor);
+                root.style.setProperty('--dynamic-button-size', buttonSize + 'px');
+                root.style.setProperty('--dynamic-button-margin', buttonMargin + 'px');
+                root.style.setProperty('--dynamic-font-size', fontSize + 'px');
+                root.style.setProperty('--dynamic-custom-button-size', customButtonSize + 'px');
+                root.style.setProperty('--container-width', width + 'px');
+                root.style.setProperty('--container-height', height + 'px');
+
+                // Определяем ориентацию контейнера
+                var isLandscape = width > height;
+                root.style.setProperty('--is-landscape', isLandscape ? '1' : '0');
+            }
+        }, {
             key: "updateButtonSizes",
             value: function() {
                 // Обновляем базовые размеры кнопки из CSS
                 this.buttonSize = parseInt(window.getComputedStyle(this.button).getPropertyValue("width"));
                 this.buttonMargin = parseInt(window.getComputedStyle(this.button).getPropertyValue("margin"));
 
+                // Получаем размеры контейнера
+                var containerWidth = this.appWrapper.offsetWidth;
+                var containerHeight = this.appWrapper.offsetHeight || window.innerHeight;
+
                 // Пересчитываем размеры сетки кнопок если они есть
                 var buttons = this.buttonWrapper.querySelectorAll(".button");
                 if (buttons.length > 1) {
                     var t = this.stages[this.stage - 1]; // Текущий этап (stage уже увеличен)
                     if (t && t.multiply && "grid" == t.multiply.type) {
+                        var gridX = t.multiply.x;
+                        var gridY = t.multiply.y;
+
+                        // Вычисляем оптимальный размер кнопки для сетки
+                        var availableWidth = containerWidth - 20; // padding
+                        var availableHeight = containerHeight * 0.6; // оставляем место для message-box
+
+                        var maxButtonWidth = (availableWidth * 0.9) / gridX;
+                        var maxButtonHeight = (availableHeight * 0.9) / gridY;
+                        var optimalSize = Math.min(maxButtonWidth, maxButtonHeight);
+
                         var s = {
-                            size: 80,
-                            margin: 10,
+                            size: Math.max(30, Math.min(100, optimalSize * 0.8)),
+                            margin: Math.max(2, Math.min(15, optimalSize * 0.1)),
                             use: false
                         };
-                        if (this.appWrapper.offsetWidth <= t.multiply.x * (this.buttonSize + 2 * this.buttonMargin)) {
-                            s.size = .8 * this.appWrapper.offsetWidth / t.multiply.x;
-                            s.margin = .1 * this.appWrapper.offsetWidth / t.multiply.x;
+
+                        // Проверяем, помещается ли сетка в контейнер
+                        if (containerWidth <= gridX * (this.buttonSize + 2 * this.buttonMargin)) {
                             s.use = true;
                             this.buttonWrapper.style.width = "100%";
                         } else {
-                            this.buttonWrapper.style.width = t.multiply.x * (this.buttonSize + 2 * this.buttonMargin) + "px";
+                            this.buttonWrapper.style.width = gridX * (this.buttonSize + 2 * this.buttonMargin) + "px";
                         }
+
                         if (s.use) {
                             buttons.forEach(function(btn) {
                                 btn.style.width = s.size + "px";
@@ -204,6 +301,24 @@ var preloadImage = function(e) {
                                 btn.style.margin = "";
                             });
                         }
+                    }
+                }
+
+                // Обновляем размеры для режима randomize
+                if (buttons.length > 1) {
+                    var currentStage = this.stages[this.stage - 1];
+                    if (currentStage && currentStage.randomize) {
+                        var self = this;
+                        var baseSize = Math.min(containerWidth * 0.15, 80);
+                        buttons.forEach(function(btn) {
+                            var currentWidth = parseInt(btn.style.width) || self.buttonSize;
+                            var scale = currentWidth / self.buttonSize;
+                            var newSize = baseSize * scale;
+                            var newMargin = newSize * 0.125;
+                            btn.style.width = newSize + "px";
+                            btn.style.height = newSize + "px";
+                            btn.style.margin = newMargin + "px";
+                        });
                     }
                 }
             }
