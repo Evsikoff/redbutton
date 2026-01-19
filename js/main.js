@@ -56,16 +56,9 @@ var preloadImage = function(e) {
                 }) : t.stages && (this.stages = stages), !document.querySelector(t.wrapperSelector)) throw new Error("Game app wrapper not found by specified selector");
             this.appWrapper = document.querySelector(t.wrapperSelector), this.createMarkup(), this.button.addEventListener("click", debounce(this.handleClick.bind(this), t.clickDelay, !0));
 
-            this.baseFrameSize = {
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
-            this.updateIframeScale();
-
             // Обработчики изменения размера окна и iframe для адаптивности
             var self = this;
             this.handleFrameResize = debounce(function() {
-                self.updateIframeScale();
                 self.updateButtonSizes();
             }, 150);
             window.addEventListener("resize", this.handleFrameResize);
@@ -174,18 +167,6 @@ var preloadImage = function(e) {
                     m.setAttribute("href", t.link), m.setAttribute("target", "_top"), m.classList.add("button-ref"), this.button.appendChild(m)
                 }
                 t.restart && this.reset(), this.stage++
-            }
-        }, {
-            key: "updateIframeScale",
-            value: function() {
-                var t = window.innerWidth || document.documentElement.clientWidth,
-                    e = window.innerHeight || document.documentElement.clientHeight;
-                this.baseFrameSize || (this.baseFrameSize = {
-                    width: t,
-                    height: e
-                });
-                var i = Math.min(1, t / this.baseFrameSize.width, e / this.baseFrameSize.height);
-                this.appWrapper.style.transform = "scale(" + i + ")"
             }
         }, {
             key: "updateButtonSizes",
