@@ -151,6 +151,8 @@ body {
     transition: .35s;
     padding: 0 10px;
     box-sizing: border-box;
+    transform-origin: center center;
+    will-change: transform;
 }
 
 .button-wrapper {
