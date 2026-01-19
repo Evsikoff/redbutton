@@ -322,14 +322,6 @@ body.visible-area--compact .button-wrapper {
     }
 }
 
-@media screen and (max-width: 767px) and (orientation: portrait) {
-    #app-frame {
-        width: min(100vw, calc(100dvh * 3 / 4));
-        height: min(100dvh, calc(100vw * 4 / 3));
-        aspect-ratio: 3 / 4;
-    }
-}
-
 @media screen and (max-width: 767px) and (orientation: landscape) {
     #app-frame {
         width: min(100vw, calc(100dvh * 64 / 27));
