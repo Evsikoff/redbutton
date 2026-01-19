@@ -40,8 +40,10 @@ function startVisibleAreaTracking() {
             height: window.innerHeight,
             scale: 1
         };
-        var visibleWidth = Math.round(viewport.width);
-        var visibleHeight = Math.round(viewport.height);
+        var innerWidth = window.innerWidth;
+        var innerHeight = window.innerHeight;
+        var visibleWidth = Math.round(Math.max(innerWidth, viewport.width));
+        var visibleHeight = Math.round(Math.max(innerHeight, viewport.height));
         if (visibleWidth !== lastWidth) {
             root.style.setProperty("--visible-width", visibleWidth + "px");
             lastWidth = visibleWidth;
@@ -50,8 +52,8 @@ function startVisibleAreaTracking() {
             root.style.setProperty("--visible-height", visibleHeight + "px");
             lastHeight = visibleHeight;
         }
-        var baselineHeight = Math.max(window.innerHeight, visibleHeight);
-        var scale = Math.min(1, visibleHeight / baselineHeight);
+        var baselineHeight = Math.max(innerHeight, visibleHeight);
+        var scale = Math.min(1, viewport.height / baselineHeight);
         root.style.setProperty("--visible-scale", scale.toFixed(3));
         document.body.classList.toggle("visible-area--compact", scale < 0.9);
     }
@@ -280,8 +282,9 @@ var preloadImage = function(e) {
                     };
                 if (!(p > 0 && d > 0 && t > 0 && e > 0)) return c;
                 var h = Math.min(p / t, d / e),
-                    m = this.buttonSize + 2 * this.buttonMargin;
-                return c.size = .8 * h, c.margin = .1 * h, c.use = h < m, c
+                    m = this.buttonSize + 2 * this.buttonMargin,
+                    f = t * e >= 49;
+                return f ? (c.size = .7 * h, c.margin = .05 * h, c.use = !0) : (c.size = .8 * h, c.margin = .1 * h, c.use = h < m), c
             }
         }]), i
     }();
