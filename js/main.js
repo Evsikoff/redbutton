@@ -282,8 +282,9 @@ var preloadImage = function(e) {
                     };
                 if (!(p > 0 && d > 0 && t > 0 && e > 0)) return c;
                 var h = Math.min(p / t, d / e),
-                    m = this.buttonSize + 2 * this.buttonMargin;
-                return c.size = .8 * h, c.margin = .1 * h, c.use = h < m, c
+                    m = this.buttonSize + 2 * this.buttonMargin,
+                    f = t * e >= 49;
+                return f ? (c.size = .7 * h, c.margin = .05 * h, c.use = !0) : (c.size = .8 * h, c.margin = .1 * h, c.use = h < m), c
             }
         }]), i
     }();
