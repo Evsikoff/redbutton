@@ -112,15 +112,12 @@ var preloadImage = function(e) {
                 if (t.transform && (this.button.style.transform = t.transform), t.animation && t.animation.class && (this.currentAnimationClass = t.animation.class, this.button.classList.add(t.animation.class)), t.multiply && "grid" == t.multiply.type) {
                     var e = t.multiply.x * t.multiply.y,
                         i = t.multiply.true.x + t.multiply.x * (t.multiply.true.y - 1),
-                        s = {
-                            size: 80,
-                            margin: 10,
-                            use: !1
-                        };
-                    this.appWrapper.offsetWidth <= t.multiply.x * (this.buttonSize + 2 * this.buttonMargin) ? (s.size = .8 * this.appWrapper.offsetWidth / t.multiply.x, s.margin = .1 * this.appWrapper.offsetWidth / t.multiply.x, s.use = !0, this.buttonWrapper.style.width = "100%", this.button.style.width = s.size + "px", this.button.style.height = s.size + "px", this.button.style.margin = s.margin + "px") : this.buttonWrapper.style.width = t.multiply.x * (this.buttonSize + 2 * this.buttonMargin) + "px";
-                    for (var a = 1; a < e; a++) {
-                        var r = document.createElement("div");
-                        r.classList.add("button"), s.use && (r.style.width = s.size + "px", r.style.height = s.size + "px", r.style.margin = s.margin + "px"), a < i ? this.buttonWrapper.insertBefore(r, this.button) : this.buttonWrapper.appendChild(r)
+                        s = this.getGridSizing(t.multiply.x, t.multiply.y),
+                        a = this.buttonSize + 2 * this.buttonMargin;
+                    s.use ? (this.buttonWrapper.style.width = "100%", this.button.style.width = s.size + "px", this.button.style.height = s.size + "px", this.button.style.margin = s.margin + "px") : this.buttonWrapper.style.width = t.multiply.x * a + "px";
+                    for (var r = 1; r < e; r++) {
+                        var n = document.createElement("div");
+                        n.classList.add("button"), s.use && (n.style.width = s.size + "px", n.style.height = s.size + "px", n.style.margin = s.margin + "px"), r < i ? this.buttonWrapper.insertBefore(n, this.button) : this.buttonWrapper.appendChild(n)
                     }
                 }
                 if (t.multiply && "rgb" == t.multiply.type) {
@@ -180,19 +177,9 @@ var preloadImage = function(e) {
                 if (buttons.length > 1) {
                     var t = this.stages[this.stage - 1]; // Текущий этап (stage уже увеличен)
                     if (t && t.multiply && "grid" == t.multiply.type) {
-                        var s = {
-                            size: 80,
-                            margin: 10,
-                            use: false
-                        };
-                        if (this.appWrapper.offsetWidth <= t.multiply.x * (this.buttonSize + 2 * this.buttonMargin)) {
-                            s.size = .8 * this.appWrapper.offsetWidth / t.multiply.x;
-                            s.margin = .1 * this.appWrapper.offsetWidth / t.multiply.x;
-                            s.use = true;
-                            this.buttonWrapper.style.width = "100%";
-                        } else {
-                            this.buttonWrapper.style.width = t.multiply.x * (this.buttonSize + 2 * this.buttonMargin) + "px";
-                        }
+                        var s = this.getGridSizing(t.multiply.x, t.multiply.y),
+                            e = this.buttonSize + 2 * this.buttonMargin;
+                        s.use ? this.buttonWrapper.style.width = "100%" : this.buttonWrapper.style.width = t.multiply.x * e + "px";
                         if (s.use) {
                             buttons.forEach(function(btn) {
                                 btn.style.width = s.size + "px";
@@ -226,6 +213,29 @@ var preloadImage = function(e) {
 
                 this.clearField();
                 this.handleClick();
+            }
+        }, {
+            key: "getGridSizing",
+            value: function(t, e) {
+                var i = this.appWrapper.parentElement || this.appWrapper,
+                    s = window.getComputedStyle(i),
+                    a = window.getComputedStyle(this.messageBox),
+                    r = window.getComputedStyle(this.buttonWrapper),
+                    n = parseFloat(s.paddingTop) + parseFloat(s.paddingBottom),
+                    o = parseFloat(s.paddingLeft) + parseFloat(s.paddingRight),
+                    u = this.messageBox.offsetHeight + parseFloat(a.marginTop) + parseFloat(a.marginBottom),
+                    l = parseFloat(r.marginTop) + parseFloat(r.marginBottom),
+                    p = i.clientWidth - o,
+                    d = i.clientHeight - n - u - l,
+                    c = {
+                        size: 80,
+                        margin: 10,
+                        use: !1
+                    };
+                if (!(p > 0 && d > 0 && t > 0 && e > 0)) return c;
+                var h = Math.min(p / t, d / e),
+                    m = this.buttonSize + 2 * this.buttonMargin;
+                return c.size = .8 * h, c.margin = .1 * h, c.use = h < m, c
             }
         }]), i
     }();
