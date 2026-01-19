@@ -40,8 +40,10 @@ function startVisibleAreaTracking() {
             height: window.innerHeight,
             scale: 1
         };
-        var visibleWidth = Math.round(viewport.width);
-        var visibleHeight = Math.round(viewport.height);
+        var innerWidth = window.innerWidth;
+        var innerHeight = window.innerHeight;
+        var visibleWidth = Math.round(Math.max(innerWidth, viewport.width));
+        var visibleHeight = Math.round(Math.max(innerHeight, viewport.height));
         if (visibleWidth !== lastWidth) {
             root.style.setProperty("--visible-width", visibleWidth + "px");
             lastWidth = visibleWidth;
@@ -50,8 +52,8 @@ function startVisibleAreaTracking() {
             root.style.setProperty("--visible-height", visibleHeight + "px");
             lastHeight = visibleHeight;
         }
-        var baselineHeight = Math.max(window.innerHeight, visibleHeight);
-        var scale = Math.min(1, visibleHeight / baselineHeight);
+        var baselineHeight = Math.max(innerHeight, visibleHeight);
+        var scale = Math.min(1, viewport.height / baselineHeight);
         root.style.setProperty("--visible-scale", scale.toFixed(3));
         document.body.classList.toggle("visible-area--compact", scale < 0.9);
     }
