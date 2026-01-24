@@ -213,14 +213,15 @@ var preloadImage = function(e) {
                     m.setAttribute("href", t.link), m.setAttribute("target", "_top"), m.classList.add("button-ref"), this.button.appendChild(m)
                 }
                 if (t.waitForReload) {
-                    window.localStorage.pendingStage = t.waitForReload;
+                    // Сохраняем прогресс сразу на шаг из waitForReload
+                    window.localStorage.currentGameStage = t.waitForReload;
                     if (this.player) {
                         this.player.setData({
-                            pendingStage: t.waitForReload
+                            currentGameStage: t.waitForReload
                         }).then(function() {
-                            console.log('Pending stage saved:', t.waitForReload);
+                            console.log('Stage saved for reload:', t.waitForReload);
                         }).catch(function(err) {
-                            console.log('Pending stage save failed:', err);
+                            console.log('Stage save failed:', err);
                         });
                     }
                     this.waitingForReload = true;
