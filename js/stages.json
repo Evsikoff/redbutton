@@ -1205,7 +1205,7 @@
       "url": "imgs/blow.png"
     },
     "transform": "translateY(-80%) scale(3)",
-    "link": "./index.html?restart=265"
+    "waitForReload": 265
   },
   {
     "message": "Невероятно! Ты вернулся! Вот твоя любимая кнопка :)"

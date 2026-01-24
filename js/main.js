@@ -211,6 +211,18 @@ var preloadImage = function(e) {
                     var m = document.createElement("a");
                     m.setAttribute("href", t.link), m.setAttribute("target", "_top"), m.classList.add("button-ref"), this.button.appendChild(m)
                 }
+                if (t.waitForReload) {
+                    window.localStorage.pendingStage = t.waitForReload;
+                    if (this.player) {
+                        this.player.setData({
+                            pendingStage: t.waitForReload
+                        }).then(function() {
+                            console.log('Pending stage saved:', t.waitForReload);
+                        }).catch(function(err) {
+                            console.log('Pending stage save failed:', err);
+                        });
+                    }
+                }
                 t.restart && this.reset(), this.stage++
             }
         }, {
