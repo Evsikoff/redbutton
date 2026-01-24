@@ -86,7 +86,7 @@ var preloadImage = function(e) {
     Game = function() {
         function i(t) {
             var e = this;
-            _classCallCheck(this, i), console.log(t), this.hideButton = t.hideButton, this.stage = 0, this.stages = [], this.defaultButtonImageUrl = "./images/red-button.png";
+            _classCallCheck(this, i), console.log(t), this.hideButton = t.hideButton, this.stage = 0, this.stages = [], this.defaultButtonImageUrl = "./images/red-button.png", this.waitingForReload = false;
 
             // Сохраняем ссылки на Yandex SDK и игрока
             this.ysdk = t.ysdk || null;
@@ -152,6 +152,7 @@ var preloadImage = function(e) {
         }, {
             key: "handleClick",
             value: function() {
+                if (this.waitingForReload) return;
                 this.saveProgress();
                 this.clearField();
                 var t = this.stages[this.stage];
@@ -222,6 +223,11 @@ var preloadImage = function(e) {
                             console.log('Pending stage save failed:', err);
                         });
                     }
+                    this.waitingForReload = true;
+                    this.button.classList.add("button--disabled");
+                    this.button.style.pointerEvents = "none";
+                    this.button.setAttribute("draggable", "false");
+                    return;
                 }
                 t.restart && this.reset(), this.stage++
             }
