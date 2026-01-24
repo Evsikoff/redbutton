@@ -86,7 +86,7 @@ var preloadImage = function(e) {
     Game = function() {
         function i(t) {
             var e = this;
-            _classCallCheck(this, i), console.log(t), this.hideButton = t.hideButton, this.stage = 0, this.stages = [], this.defaultButtonImageUrl = "./images/red-button.png";
+            _classCallCheck(this, i), console.log(t), this.hideButton = t.hideButton, this.stage = 0, this.stages = [], this.defaultButtonImageUrl = "./images/red-button.png", this.waitingForReload = false;
 
             // Сохраняем ссылки на Yandex SDK и игрока
             this.ysdk = t.ysdk || null;
@@ -152,6 +152,7 @@ var preloadImage = function(e) {
         }, {
             key: "handleClick",
             value: function() {
+                if (this.waitingForReload) return;
                 this.saveProgress();
                 this.clearField();
                 var t = this.stages[this.stage];
@@ -210,6 +211,24 @@ var preloadImage = function(e) {
                     }), document.querySelector("#news").style.background = "transparent"), t.link) {
                     var m = document.createElement("a");
                     m.setAttribute("href", t.link), m.setAttribute("target", "_top"), m.classList.add("button-ref"), this.button.appendChild(m)
+                }
+                if (t.waitForReload) {
+                    // Сохраняем прогресс сразу на шаг из waitForReload
+                    window.localStorage.currentGameStage = t.waitForReload;
+                    if (this.player) {
+                        this.player.setData({
+                            currentGameStage: t.waitForReload
+                        }).then(function() {
+                            console.log('Stage saved for reload:', t.waitForReload);
+                        }).catch(function(err) {
+                            console.log('Stage save failed:', err);
+                        });
+                    }
+                    this.waitingForReload = true;
+                    this.button.classList.add("button--disabled");
+                    this.button.style.pointerEvents = "none";
+                    this.button.setAttribute("draggable", "false");
+                    return;
                 }
                 t.restart && this.reset(), this.stage++
             }
