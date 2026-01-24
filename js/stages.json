@@ -81,7 +81,7 @@
   {
     "message": "...он уснул. Бесполезный охранник.",
     "image": {
-      "url": "imgs/penguin.png"
+      "url": "imgs/pengsleep.png"
     }
   },
   {
@@ -1434,8 +1434,7 @@
     "message": "Поделись с друзьями этой забавной кнопкой"
   },
   {
-    "message": "Спасибо тебе и помни...",
-    "restart":true
+    "message": "Спасибо тебе и помни..."
   },
   {
     "restart": true
