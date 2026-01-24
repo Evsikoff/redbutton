@@ -566,7 +566,19 @@
     }
   },
   {
+    "message": "Видишь того парня впереди? Он спамил в чатах.",
+    "image": {
+      "url": "imgs/demon.png"
+    }
+  },
+  {
     "message": "Твой номер: 678",
+    "image": {
+      "url": "imgs/demon.png"
+    }
+  },
+  {
+    "message": "А вон та девушка постоянно делала утиные губы на селфи.",
     "image": {
       "url": "imgs/demon.png"
     }
@@ -578,7 +590,19 @@
     }
   },
   {
+    "message": "Кстати, знаешь что их всех объединяет?",
+    "image": {
+      "url": "imgs/demon.png"
+    }
+  },
+  {
     "message": "676",
+    "image": {
+      "url": "imgs/demon.png"
+    }
+  },
+  {
+    "message": "Все они думали, что им это сойдёт с рук :)",
     "image": {
       "url": "imgs/demon.png"
     }
