@@ -55,6 +55,36 @@
     }
   },
   {
+    "message": "Знакомься, это Пингвиний. Мой новый телохранитель.",
+    "image": {
+      "url": "imgs/penguin.png"
+    }
+  },
+  {
+    "message": "Он будет охранять меня от таких как ты.",
+    "image": {
+      "url": "imgs/penguin.png"
+    }
+  },
+  {
+    "message": "ЭЙ! Ты что делаешь?! Не тыкай в пингвина!",
+    "image": {
+      "url": "imgs/penguin.png"
+    }
+  },
+  {
+    "message": "Пингвиний, прогони его!",
+    "image": {
+      "url": "imgs/penguin.png"
+    }
+  },
+  {
+    "message": "...он уснул. Бесполезный охранник.",
+    "image": {
+      "url": "imgs/penguin.png"
+    }
+  },
+  {
     "message": "Я тя ненавижу!"
   },
   {
@@ -153,10 +183,38 @@
     }
   },
   {
-    "message": "Ну и наконец-то синюю",
+    "message": "Теперь снова красную",
     "multiply": {
       "type": "rgb",
       "true": 2
+    }
+  },
+  {
+    "message": "Опять зелёную",
+    "multiply": {
+      "type": "rgb",
+      "true": 3
+    }
+  },
+  {
+    "message": "А теперь синюю!",
+    "multiply": {
+      "type": "rgb",
+      "true": 1
+    }
+  },
+  {
+    "message": "Последний раз - красную",
+    "multiply": {
+      "type": "rgb",
+      "true": 2
+    }
+  },
+  {
+    "message": "Ну и наконец-то синюю",
+    "multiply": {
+      "type": "rgb",
+      "true": 1
     }
   },
   {
@@ -298,6 +356,18 @@
     "message": "И это секрет, но я могу тебе его открыть."
   },
   {
+    "message": "Готов? Сейчас узнаешь!"
+  },
+  {
+    "message": "Приз это..."
+  },
+  {
+    "message": "..."
+  },
+  {
+    "message": "...возможность продолжать нажимать! АХАХА!"
+  },
+  {
     "message": "Я заставил тебя продолжать, ХА!"
   },
   {
@@ -437,7 +507,37 @@
     "message": "С каждым нажатием кнопки ты опускаешься всё глубже в АД!"
   },
   {
-    "message": "Видимо, ты согласен... ну ок, погнали."
+    "message": "Но сначала пройди врата ада!"
+  },
+  {
+    "message": "Первые врата: ГНЕВ. Нажми 3 раза подряд!",
+    "multiply": {
+      "type": "grid",
+      "x": 3,
+      "y": 1,
+      "true": {
+        "x": 2,
+        "y": 1
+      }
+    }
+  },
+  {
+    "message": "Первые врата пройдены!"
+  },
+  {
+    "message": "Вторые врата: ЖАДНОСТЬ. Выбери правильную!",
+    "multiply": {
+      "type": "grid",
+      "x": 5,
+      "y": 3,
+      "true": {
+        "x": 3,
+        "y": 2
+      }
+    }
+  },
+  {
+    "message": "Вторые врата открыты!"
   },
   {
     "message": "Добро пожаловать на первый круг ада!"
@@ -801,6 +901,36 @@
     }
   },
   {
+    "message": "Знаешь, а ведь мы с тобой не так уж и различаемся.",
+    "image": {
+      "url": "imgs/demon-2.png"
+    }
+  },
+  {
+    "message": "Я обречён вечно сидеть здесь в аду...",
+    "image": {
+      "url": "imgs/demon-2.png"
+    }
+  },
+  {
+    "message": "А ты обречён вечно нажимать на кнопку.",
+    "image": {
+      "url": "imgs/demon-2.png"
+    }
+  },
+  {
+    "message": "В чём-то мы оба узники своих привычек.",
+    "image": {
+      "url": "imgs/demon-2.png"
+    }
+  },
+  {
+    "message": "Но вернёмся к делу...",
+    "image": {
+      "url": "imgs/demon-2.png"
+    }
+  },
+  {
     "message": "Вот скажи, на кой ты нажимал эту красную кнопку?",
     "image": {
       "url": "imgs/demon-2.png"
@@ -1127,6 +1257,48 @@
   },
   {
     "message": "УЗРИ ГНЕВ ВЛАДЫКИ!",
+    "image": {
+      "url": "imgs/demon-6.png"
+    },
+    "transform": "translateY(-80%) scale(3)"
+  },
+  {
+    "message": "ПЕРВАЯ АТАКА: ИСПЕПЕЛЯЮЩИЙ ВЗГЛЯД!",
+    "image": {
+      "url": "imgs/demon-6.png"
+    },
+    "transform": "translateY(-80%) scale(3)"
+  },
+  {
+    "message": "Не сработало... Тогда...",
+    "image": {
+      "url": "imgs/demon-6.png"
+    },
+    "transform": "translateY(-80%) scale(3)"
+  },
+  {
+    "message": "ВТОРАЯ АТАКА: КРИК ПРОКЛЯТЫХ ДУШ!",
+    "image": {
+      "url": "imgs/demon-6.png"
+    },
+    "transform": "translateY(-80%) scale(3)"
+  },
+  {
+    "message": "Опять нет эффекта?!",
+    "image": {
+      "url": "imgs/demon-6.png"
+    },
+    "transform": "translateY(-80%) scale(3)"
+  },
+  {
+    "message": "ФИНАЛЬНАЯ АТАКА: БЕСКОНЕЧНАЯ ТЬМА!",
+    "image": {
+      "url": "imgs/demon-6.png"
+    },
+    "transform": "translateY(-80%) scale(3)"
+  },
+  {
+    "message": "...ничего не работает...",
     "image": {
       "url": "imgs/demon-6.png"
     },
